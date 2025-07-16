@@ -1,6 +1,12 @@
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
+
 from apache_beam.ml.inference.base import RunInference, ModelHandler
+from apache_beam.ml.inference.base import PredictionResult, KeyedModelHandler
+from apache_beam.ml.inference.huggingface_inference import HuggingFacePipelineModelHandler
+from apache_beam.ml.inference.huggingface_inference import HuggingFaceModelHandlerKeyedTensor
+from apache_beam.ml.inference.huggingface_inference import HuggingFaceModelHandlerTensor
+from apache_beam.ml.inference.huggingface_inference import PipelineTask
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -92,3 +98,19 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# interesting so here we created a custome model handler that loads the model and tokenizer from hugging face and runs inference on a batch of text prompts.
+# we can use this model handler to run inference on a batch of text prompts.
+# we can also use this model handler to run inference on a single text prompt.
+# so we can either use a custom model handler or use the beam provided model handlers.
+# the beam provided model handlers are HuggingFaceModelHandlerKeyedTensor and HuggingFaceModelHandlerTensor.
+# the HuggingFaceModelHandlerKeyedTensor is used when the input is a keyed tensor.
+# the HuggingFaceModelHandlerTensor is used when the input is a tensor.
+# the HuggingFacePipelineModelHandler is used when the input is a pipeline.
+# the HuggingFaceModelHandler is used when the input is a model.
+
+# so I now want to basically find a good use case to implement beam ml inference.
+# Use case:
+# 1 - Batch Summarization of Server Logs
+# 2 - Genomics: Large-Scale Variant Calling and Annotation
+# 3 - Quantitative Finance: Market Signal Generation from Unstructured Data
