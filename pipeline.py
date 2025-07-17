@@ -5,7 +5,6 @@ import apache_beam as beam
 from apache_beam.ml.inference.base import RunInference
 from apache_beam.ml.inference.huggingface_inference import HuggingFaceModelHandlerKeyedTensor
 
-# Assumes your project structure is as we've discussed
 from utils.pipeline_options import NerPipelineOptions
 from utils.parsing import (ParseClinVarTxt, ValidateAndPrepareVariant, 
                               SelectAndRenameFields, FanoutPrompts)
@@ -18,7 +17,6 @@ def run():
     
     options = NerPipelineOptions()
 
-    # The KeyedTensor model handler is efficient for joining data back post-inference
     model_handler = HuggingFaceModelHandlerKeyedTensor(
         model_uri=options.model_name,
         model_class='AutoModelForTokenClassification',

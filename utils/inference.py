@@ -19,7 +19,6 @@ class ProcessAndCombineResults(beam.DoFn):
         """
         key, data = element
         
-        # CoGroupByKey produces lists for each tag. We expect only one item in each.
         if not data['original'] or not data['ner']:
             Metrics.counter('CombineResults', 'MissingOriginalOrNerData').inc()
             return
@@ -27,8 +26,6 @@ class ProcessAndCombineResults(beam.DoFn):
         original_record = data['original'][0]
         ner_prediction = data['ner'][0]
 
-        # The output of a token-classification model is a list of dicts
-        # e.g., [{'entity_group': 'GENE', 'word': 'BRCA1'}, ...]
         extracted_genes = [
             entity['word'] for entity in ner_prediction if entity.get('entity_group') == 'GENE'
         ]
@@ -36,14 +33,11 @@ class ProcessAndCombineResults(beam.DoFn):
             entity['word'] for entity in ner_prediction if entity.get('entity_group') == 'DISEASE'
         ]
 
-        # Create a final, enriched record by copying the original data
         final_record = original_record.copy()
         
-        # Add the new data extracted by the model
         final_record['extracted_genes'] = extracted_genes
         final_record['extracted_diseases'] = extracted_diseases
         
-        # Add a validation flag for easy analysis
         final_record['is_gene_validated'] = (
             original_record.get('gene_symbol') in extracted_genes
         )
