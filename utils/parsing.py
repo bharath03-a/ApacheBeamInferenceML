@@ -105,3 +105,23 @@ class SelectAndRenameFields(beam.DoFn):
             yield trimmed_record
         except KeyError as e:
             Metrics.counter('SelectFields', f'MissingCriticalFieldError_{e}').inc()
+
+class FanoutPrompts(beam.DoFn):
+    """
+    Takes a single record and creates two separate records for A/B testing,
+    one for each prompt type.
+    """
+    def process(self, element: dict) -> Iterable[dict]:
+        base_record = element.copy()
+        prompt_a_text = base_record.pop("inference_text_A")
+        prompt_b_text = base_record.pop("inference_text_B")
+
+        record_a = base_record.copy()
+        record_a["prompt_type"] = "A_NaturalSentence"
+        record_a["inference_text"] = prompt_a_text
+        yield record_a
+
+        record_b = base_record.copy()
+        record_b["prompt_type"] = "B_ClinicalContext"
+        record_b["inference_text"] = prompt_b_text
+        yield record_b
